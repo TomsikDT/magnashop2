@@ -15,7 +15,4 @@
 </head>
 <body>
     <header>
-        <div class="logo">
-            <a href="/"><img src="/src/theme/default/assets/images/logo.png" alt="Logo"></a>
-        </div>
     </header>

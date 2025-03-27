@@ -8,6 +8,9 @@ session_start(); // ← nutné pro přístup k $_SESSION
 
 mb_internal_encoding("utf8");
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+
 spl_autoload_register(function ($class) {
     $class = ltrim($class, '\\');
 

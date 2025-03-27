@@ -50,7 +50,7 @@ class LoginController extends Controller{
             if ($userModel->findByEmail($email)) {
                 $this->set('error', 'Uživatel s tímto e-mailem již existuje.');
             } else {
-                $userModel->create($email, $password);
+                $userModel->create($email, $password); 
                 $this->redirect('/login/login');
             }
         }

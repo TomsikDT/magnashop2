@@ -9,37 +9,42 @@ class RouterController extends Controller {
 
     public function process(array $parameters): void {
         $parsedURL = $this->parseURL($parameters[0] ?? '');
-    
-        // 🟢 Pokud je URL prázdná (tzn. "/"), načteme defaultní controller ručně
+
+        // Pokud je URL prázdná (domovská stránka)
         if (empty($parsedURL)) {
             $defaultController = new \base\controller\HomepageController();
             $defaultController->index();
             return;
         }
-    
-        // 🔁 Jinak normální routování
+
+        // 1. část URL = modul (např. 'product', 'quote', 'login')
         $module = $parsedURL[0];
-        $controllerName = ucfirst($module) . 'Controller';
+
+        // 2. část = akce (např. 'list', 'add', 'login', ...)
         $action = $parsedURL[1] ?? 'index';
+
+        // 3. a další části = parametry
         $params = array_slice($parsedURL, 2);
-    
+
+        // Controller se jmenuje vždy <Modul>Controller (např. ProductController)
+        $controllerName = ucfirst($module) . 'Controller';
         $controllerNamespace = "modules\\$module\\controller\\$controllerName";
-    
+
         if (class_exists($controllerNamespace)) {
             $controllerObject = new $controllerNamespace();
-    
+
             if (method_exists($controllerObject, $action)) {
                 call_user_func_array([$controllerObject, $action], $params);
             } else {
-                error_log("404: Class nebo metoda nenalezena: $controllerNamespace::$action");
+                error_log("❌ Method nenalezena: $controllerNamespace::$action");
                 self::show404();
             }
         } else {
-            error_log("404: Class nebo metoda nenalezena: $controllerNamespace::$action");
+            error_log("❌ Controller nenalezen: $controllerNamespace");
             self::show404();
         }
     }
-    
+
     public static function show404() {
         require_once('modules/error/controller/ErrorController.php');
         $errorController = new \modules\error\controller\ErrorController();
@@ -48,7 +53,7 @@ class RouterController extends Controller {
     }
 
     private function parseURL(string $url): array {
-        if(empty($url)) return [];
+        if (empty($url)) return [];
 
         $parsedURL = parse_url($url);
         $parsedURL['path'] = ltrim($parsedURL['path'] ?? '', '/');
@@ -64,6 +69,4 @@ class RouterController extends Controller {
         $sentence = str_replace(' ', '', $sentence);
         return $sentence;
     }
-
-
 }
