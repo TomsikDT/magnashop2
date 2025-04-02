@@ -24,6 +24,17 @@
             <label for="add-image">Obrázek</label>
             <input type="file" id="add-image" name="image" accept="image/*">
 
+            <label>Kategorie:</label>
+        <div id="add-categories-checkboxes" class="category-checkboxes">
+            <?php foreach ($categories as $cat): ?>
+                <label>
+                    <input type="checkbox" name="categories[]" value="<?= $cat['id'] ?>">
+                    <?= htmlspecialchars($cat['name']) ?>
+                </label><br>
+            <?php endforeach; ?>
+        </div>
+
+
             <fieldset>
                 <legend>Množství ve skladech</legend>
                 <?php foreach ($warehouses as $w): ?>

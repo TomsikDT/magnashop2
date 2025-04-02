@@ -194,7 +194,12 @@ class QuoteController extends Controller
         }
     
         extract($quote); // pro šablonu
-    
+
+        $quoteNumber = $quote['quote_number'] ?? '';
+        $created_at = $quote['created_at'] ?? '';
+        $totalWithoutVat = $quote['total_without_vat'] ?? '';
+        $totalWithVat = $quote['total_with_vat'] ?? '';
+
         ob_start();
         require 'modules/quote/view/pdf_template.php';
         $html = ob_get_clean();

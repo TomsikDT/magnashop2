@@ -20,6 +20,18 @@
                 <option value="work">Práce</option>
             </select>
 
+            <label>Kategorie:</label>
+        <div id="edit-categories-checkboxes" class="category-checkboxes">
+            <?php foreach ($categories as $cat): ?>
+                <label>
+                    <input type="checkbox" name="categories[]" value="<?= $cat['id'] ?>">
+                    <?= htmlspecialchars($cat['name']) ?>
+                </label><br>
+            <?php endforeach; ?>
+        </div>
+
+
+
             <fieldset>
                 <legend>Množství ve skladech</legend>
                 <?php foreach ($warehouses as $w): ?>

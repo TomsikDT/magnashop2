@@ -22,19 +22,37 @@ class Product
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function getAllWithQuantity(): array {
-        $stmt = $this->db->query("
-            SELECT p.*,
-                   (SELECT SUM(quantity) FROM product_warehouse pw WHERE pw.product_id = p.id) AS total_quantity
-            FROM products p
-            ORDER BY name
-        ");
-        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($products as &$p) {
-            $p['warehouses'] = $this->getWarehouseQuantities($p['id']);
+    public function getAllWithQuantity(?int $categoryId = null): array {
+        if ($categoryId) {
+            $stmt = $this->db->prepare("
+                SELECT p.*, 
+                       (SELECT SUM(quantity) FROM product_warehouse pw WHERE pw.product_id = p.id) AS total_quantity
+                FROM products p
+                JOIN product_category pc ON pc.product_id = p.id
+                WHERE pc.category_id = ?
+                AND p.deleted_at IS NULL
+                GROUP BY p.id
+            ");
+            $stmt->execute([$categoryId]);
+        } else {
+            $stmt = $this->db->query("
+                SELECT p.*, 
+                       (SELECT SUM(quantity) FROM product_warehouse pw WHERE pw.product_id = p.id) AS total_quantity
+                FROM products p
+                WHERE p.deleted_at IS NULL
+                ORDER BY p.name
+            ");
         }
-
+    
+        $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        // načíst kategorie
+        $catStmt = $this->db->prepare("SELECT category_id FROM product_category WHERE product_id = ?");
+        foreach ($products as &$product) {
+            $catStmt->execute([$product['id']]);
+            $product['category_ids'] = array_column($catStmt->fetchAll(PDO::FETCH_ASSOC), 'category_id');
+        }
+    
         return $products;
     }
 
@@ -129,5 +147,40 @@ class Product
     public function deleteAllPermanently(): void {
         $this->db->query("DELETE FROM products WHERE deleted_at IS NOT NULL");
     }
+
+    // Získání závislostí produktu
+public function getDependencies(int $productId): array {
+    $stmt = $this->db->prepare("
+        SELECT d.*, p.name AS dependency_name
+        FROM product_dependency d
+        JOIN products p ON p.id = d.dependency_product_id
+        WHERE d.product_id = ?
+    ");
+    $stmt->execute([$productId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Přidání nebo úprava závislosti
+public function saveDependency(int $productId, int $dependencyId, float $multiplier, bool $autoAdd, ?string $note): void {
+    $stmt = $this->db->prepare("
+        INSERT INTO product_dependency (product_id, dependency_product_id, quantity_multiplier, auto_add, note)
+        VALUES (?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            quantity_multiplier = VALUES(quantity_multiplier),
+            auto_add = VALUES(auto_add),
+            note = VALUES(note)
+    ");
+    $stmt->execute([$productId, $dependencyId, $multiplier, $autoAdd ? 1 : 0, $note]);
+}
+
+// Smazání závislosti
+public function deleteDependency(int $productId, int $dependencyId): void {
+    $stmt = $this->db->prepare("
+        DELETE FROM product_dependency
+        WHERE product_id = ? AND dependency_product_id = ?
+    ");
+    $stmt->execute([$productId, $dependencyId]);
+}
+
 
 }
