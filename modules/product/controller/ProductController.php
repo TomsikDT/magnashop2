@@ -12,49 +12,59 @@ class ProductController extends Controller
         if (empty($_SESSION['user'])) {
             $this->redirect('/login/login');
         }
-
+    
         $categoryId = isset($_GET['category']) ? (int) $_GET['category'] : null;
-
+    
         $productModel = new Product();
-        $products = $productModel->getAllWithQuantity($categoryId); // předpokládá i skladové množství a kategorie
-        $warehouses = $productModel->getAllWarehouses(); // přidáme i sklady pro modály
-
+        $products = $productModel->getAllWithQuantity($categoryId);
+        $warehouses = $productModel->getAllWarehouses();
+    
         $categoryModel = new Category();
-        $categories = $categoryModel->getTree();
-        
+        $categories = $categoryModel->getTreeByWarehouse(); // ⬅️ nový strom dle skladu
+    
         $childrenMap = [];
         foreach ($categories as $cat) {
             if (!empty($cat['parent_id'])) {
                 $childrenMap[$cat['parent_id']] = true;
             }
         }
-        
+    
         foreach ($products as &$p) {
             $p['warehouses'] = $productModel->getWarehouseQuantities($p['id']);
-        }        
-
-        // ⬇️ přepínač karet/tabulky
+        }
+    
         $view = $_GET['view'] ?? 'cards';
-        //$this->view = $view === 'table' ? 'product/view/list' : 'product/view/card_list';
+        $categoryPath = $this->buildCategoryPath($categories, $categoryId);
+        $categoryTreeByWarehouse = $categoryModel->getTreeGroupedByWarehouse();
 
+        $this->set('categoryTreeByWarehouse', $categoryTreeByWarehouse);
+        $this->set('categoryPath', $categoryPath);
         $this->set('childrenMap', $childrenMap);
         $this->set('categories', $categories);
         $this->set('products', $products);
         $this->set('warehouses', $warehouses);
         $this->set('categoryId', $categoryId);
         $this->setHeader(['title' => 'Seznam produktů']);
-        //$this->view = 'product/view/list';
-        //$this->view = 'product/view/card_list';
-        error_log('Zvolená kategorie: ' . ($selectedCategoryId ?? 'žádná'));
-
         $this->view = $view === 'table' ? 'product/view/list' : 'product/view/card_list';
-        $this->vypisView(); 
-
-        echo '<pre>';
-print_r($products);
-exit;
-
+        $this->vypisView();
     }
+    
+
+    private function buildCategoryPath(array $categories, ?int $categoryId): array {
+        $path = [];
+        $map = [];
+        foreach ($categories as $cat) {
+            $map[$cat['id']] = $cat;
+        }
+    
+        while ($categoryId && isset($map[$categoryId])) {
+            array_unshift($path, $map[$categoryId]);
+            $categoryId = $map[$categoryId]['parent_id'];
+        }
+    
+        return $path;
+    }
+    
 
     public function add(): void {
         if (empty($_SESSION['user']) || empty($_SESSION['user']['is_admin'])) {
@@ -415,13 +425,19 @@ public function saveDependency(): void{
 }
 
 public function updateDependency(): void {
+    if (empty($_SESSION['user'])) {
+        http_response_code(403);
+        echo json_encode(['error' => 'Neautorizovaný přístup']);
+        return;
+    }
     if (!$this->isPost()) {
         $this->redirect('/product/list');
     }
 
     $id = (int) $this->input('dependency_id');
     $quantity = (float) $this->input('quantity');
-    $autoAdd = (int) $this->input('auto_add');
+    $type = $this->input('type');
+    $autoAdd = ($type === 'work') ? 1 : 0;
     $note = $this->input('note');
 
     (new Dependency())->updateDependency($id, $quantity, $autoAdd, $note);

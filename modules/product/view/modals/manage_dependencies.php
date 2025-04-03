@@ -5,6 +5,7 @@
 
         <form method="post" action="/product/saveDependency">
             <input type="hidden" name="product_id" value="">
+            <input type="hidden" name="dependency_id" id="edit-dependency-id">
 
             <div>
                 <label for="dependent_product_id">Závislý produkt</label>
@@ -54,32 +55,4 @@
 
 
     </div>
-</div>
-
-<div id="edit-dependency-form" style="display: none;">
-    <h4>Úprava závislosti</h4>
-    <form method="post" action="/product/updateDependency">
-        <input type="hidden" name="dependency_id" id="edit-dependency-id">
-        <input type="hidden" name="product_id" id="edit-dependency-product-id">
-
-        <div>
-            <label for="edit-quantity">Množství</label>
-            <input type="number" step="0.01" name="quantity" id="edit-quantity" required>
-        </div>
-
-        <div>
-            <label for="edit-note">Poznámka</label>
-            <input type="text" name="note" id="edit-note">
-        </div>
-
-        <div>
-            <label for="edit-auto_add">Automaticky přidat</label>
-            <select name="auto_add" id="edit-auto_add">
-                <option value="1">Ano</option>
-                <option value="0">Ne</option>
-            </select>
-        </div>
-
-        <button type="submit">💾 Uložit změny</button>
-    </form>
 </div>

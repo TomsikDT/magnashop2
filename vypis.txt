@@ -1,0 +1,107 @@
+|-- .htaccess
+|-- .vscode
+    |-- settings.json
+|-- README.md
+|-- composer.json
+|-- composer.lock
+|-- images
+|-- index.php
+|-- modules
+    |-- MVC
+        |-- controller
+        |-- model
+        |-- view
+    |-- admin
+        |-- controller
+            |-- AdminController.php
+        |-- model
+            |-- Setting.php
+        |-- view
+            |-- dashboard.php
+    |-- base
+        |-- controller
+            |-- Controller.php
+            |-- HomepageController.php
+            |-- RouterController.php
+        |-- model
+            |-- Database.php
+        |-- view
+            |-- homepage
+                |-- index.php
+    |-- dashboard
+        |-- controller
+            |-- DashboardController.php
+        |-- view
+            |-- index.php
+    |-- error
+        |-- controller
+            |-- ErrorController.php
+        |-- view
+            |-- 404.php
+    |-- login
+        |-- controller
+            |-- LoginController.php
+        |-- model
+            |-- User.php
+        |-- view
+            |-- login.php
+            |-- register.php
+    |-- product
+        |-- controller
+            |-- DependencyController.php
+            |-- ProductController.php
+        |-- js
+            |-- product_modals.js
+        |-- model
+            |-- Category.php
+            |-- Dependency.php
+            |-- Product.php
+        |-- view
+            |-- add.php
+            |-- card_list.php
+            |-- dependency
+                |-- index.php
+            |-- list.php
+            |-- modals
+                |-- add_product.php
+                |-- edit_product.php
+                |-- manage_categories.php
+                |-- manage_dependencies.php
+                |-- manage_warehouses.php
+            |-- trash.php
+    |-- quote
+        |-- controller
+            |-- QuoteController.php
+        |-- model
+            |-- Quote.php
+        |-- view
+            |-- cart.php
+            |-- create.php
+            |-- list.php
+            |-- pdf_template.php
+    |-- warehouse
+        |-- controller
+            |-- WarehouseController.php
+        |-- model
+            |-- Warehouse.php
+        |-- view
+            |-- list.php
+            |-- products-all.php
+            |-- products.php
+|-- soubory.py
+|-- src
+    |-- theme
+        |-- default
+            |-- assets
+                |-- css
+                    |-- style.css
+                |-- images
+                    |-- logo.png
+                    |-- no-image.webp
+                |-- js
+            |-- layout
+                |-- footer.php
+                |-- header.php
+                |-- navbar.php
+    |-- uploads
+        |-- 1743074432_wp_magnapro_1000x1114-969x1080.webp

@@ -273,6 +273,28 @@ select[multiple] {
     background-color: #f0f0f0;
 }
 
+.category-row.active {
+    background-color: #d0e0ff;
+    font-weight: bold;
+}
+.category-row.selected,
+.category-row:hover {
+    background-color: #dce8ff;
+    border-radius: 4px;
+}
+.category-tree .category-item[data-parent=""] > .category-row .category-name {
+    font-weight: bold;
+}
+
+.category-tree .category-name {
+    padding-left: 8px;
+}
+
+.category-tree .category-item .category-row[data-id^="warehouse-"] .category-name {
+    padding-left: 0;
+}
+
+
 .category-name {
     flex-grow: 1;
     padding-left: 0.5em;
@@ -304,6 +326,34 @@ select[multiple] {
 
 .category-tree .category-item[data-level]:not([data-level="0"]) {
     display: none;
+}
+
+.category-item[data-parent] {
+    display: none;
+}
+.category-item:not(.hidden) {
+    display: list-item;
+}
+.category-tree,
+.category-tree ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+
+.breadcrumb {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.breadcrumb a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
 }
 
 

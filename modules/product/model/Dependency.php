@@ -81,6 +81,8 @@ class Dependency
             WHERE id = ?
         ");
         $stmt->execute([$quantity, $autoAdd, $note, $id]);
+        error_log("Updating dependency ID $id: quantity=$quantity, auto_add=$autoAdd, note=$note");
+
     }
     
     

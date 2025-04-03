@@ -102,7 +102,7 @@ function editDependency(dep) {
     // Změníme akci formuláře
     modal.querySelector('form').action = '/product/updateDependency';
 
-    // Přidáme skrytý input s ID závislosti, pokud tam není
+    // Přidáme skrytý input s ID závislosti
     let idInput = modal.querySelector('input[name="dependency_id"]');
     if (!idInput) {
         idInput = document.createElement('input');
@@ -200,6 +200,35 @@ function toggleAllCategories(collapse = false) {
 }
 
 
+/*********************************/
+/*********************************/
+/*********EVENT LISTENERS*********/
+/*********************************/
+/*********************************/
+document.addEventListener('DOMContentLoaded', () => {
+    const activeRow = document.querySelector('.category-row.active');
+    if (!activeRow) return;
+
+    let currentItem = activeRow.closest('.category-item');
+    if (!currentItem) return;
+
+    while (currentItem && currentItem.dataset.parent) {
+        const parentId = currentItem.dataset.parent;
+        const parentItem = document.querySelector(`.category-item[data-id="${parentId}"]`);
+        if (!parentItem) break;
+
+        // zobraz všechny sourozence (children té větve)
+        const siblings = document.querySelectorAll(`.category-item[data-parent="${parentId}"]`);
+        siblings.forEach(el => el.classList.remove('hidden'));
+
+        // změň toggle na rozbalený
+        const toggle = parentItem.querySelector('.category-toggle');
+        if (toggle) toggle.textContent = '−';
+
+        // přejdi výš
+        currentItem = parentItem;
+    }
+});
 
 
 
